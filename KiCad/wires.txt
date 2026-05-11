@@ -1,0 +1,10 @@
+(wire
+	(pts
+			(xy 160.02 111.76) (xy 160.02 101.6)
+	)
+	(stroke
+			(width 0)
+			(type default)
+	)
+	(uuid "c51e594e-bdeb-4770-a9a7-a4177dc642e1")
+)
