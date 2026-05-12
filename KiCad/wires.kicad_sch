@@ -29,7 +29,7 @@
 
   (wire
     (pts
-      (xy 20 30) (xy 40 30)
+      (xy 99 30) (xy 1 30)
     )
     (stroke
       (width 0)

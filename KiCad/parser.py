@@ -107,8 +107,7 @@ def return_setOfWires(datei):
         inhalt = datei.read()
     tokens = tokenize(inhalt)
     tree = parse(tokens)
-    wires = finde_wires(tree)
-    wire_points = finde_wire_punkte(wires)
+    wire_points = finde_wire_punkte(tree)
 
     return wire_points
 
@@ -136,4 +135,5 @@ github_datei = download_datei(github_url, local_datei)
 
 local_wires = return_setOfWires(local_datei)
 github_wires = return_setOfWires(github_datei)
-print(local_wires == github_wires)
+print(github_wires)
+print(local_wires)
