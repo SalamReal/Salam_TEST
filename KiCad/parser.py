@@ -3,6 +3,10 @@ import sys
 from pydoc import text
 from urllib.request import urlopen
 
+#Eingabe: python parser.py <datei> https://raw.githubusercontent.com/<owner>/<repository>/<branch>/<pfad/zur/datei>
+
+
+
 def return_setOfWires(datei):
     
     def tokenize(text):
@@ -67,7 +71,7 @@ def return_setOfWires(datei):
             raise ValueError("Zusätzliche Tokens nach dem Ende")
 
         return tree
-
+    
     def finde_wire_punkte(node):
         wires = set()
 
@@ -100,6 +104,7 @@ def return_setOfWires(datei):
 
     return wire_points
 
+
 def download_datei(url, dateiname):
     original_datei = dateiname.replace(".kicad_sch", "_original.kicad_sch")
     try:
@@ -114,7 +119,7 @@ def download_datei(url, dateiname):
         print(f"Fehler beim Herunterladen der Datei: {e}")
 
 if len(sys.argv) < 3:
-    print("Benutzung: python parser.py <datei> <github_repository_url>")
+    print("Benutzung: python parser.py <datei> https://raw.githubusercontent.com/<owner>/<repository>/<branch>/<pfad/zur/datei>")
     sys.exit(1)
 
 local_datei = sys.argv[1]
