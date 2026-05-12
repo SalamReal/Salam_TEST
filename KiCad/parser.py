@@ -1,12 +1,8 @@
 import os
-import sys
 from pydoc import text
 from urllib.request import urlopen
 
-#Eingabe: python parser.py <datei> https://raw.githubusercontent.com/<owner>/<repository>/<branch>/<pfad/zur/datei>
-
-
-
+#Funktion zum Parsen der KiCad-Schaltplan-Datei und Extrahieren der Wire-Punkte. Ausgabe: Set von Wire-Punkten, wobei jeder Punkt als Tupel (Start, Ende) dargestellt wird, und Start/Ende jeweils ein Tupel (x, y) ist.
 def return_setOfWires(datei):
     
     def tokenize(text):
@@ -104,7 +100,7 @@ def return_setOfWires(datei):
 
     return wire_points
 
-
+#Funktion zum Herunterladen der Datei von GitHub und Speichern als lokale Datei. Url: https://raw.githubusercontent.com/<owner>/<repository>/<branch>/<pfad/zur/datei>
 def download_datei(url, dateiname):
     original_datei = dateiname.replace(".kicad_sch", "_original.kicad_sch")
     try:
@@ -118,12 +114,21 @@ def download_datei(url, dateiname):
     except Exception as e:
         print(f"Fehler beim Herunterladen der Datei: {e}")
 
-if len(sys.argv) < 3:
-    print("Benutzung: python parser.py <datei> https://raw.githubusercontent.com/<owner>/<repository>/<branch>/<pfad/zur/datei>")
-    sys.exit(1)
+#Vergleich der Wire-Mengen. Gibt zurück: (Anzahl an gelöschten Wires, Anzahl an hinzugefügten Wires)
+def vergleiche_wire_mengen(menge1, menge2):
+    geloescht = menge1 - menge2
+    hinzugefuegt = menge2 - menge1
 
-local_datei = sys.argv[1]
-github_url = sys.argv[2]
+    return len(geloescht), len(hinzugefuegt)
+
+
+
+
+
+###Hier verknüpfen!
+local_datei = "wires.kicad_sch"
+github_url = "https://raw.githubusercontent.com/SalamReal/Salam_TEST/main/KiCad/wires.kicad_sch"
+
 github_datei = download_datei(github_url, local_datei)
 
 
@@ -131,7 +136,7 @@ local_wires = return_setOfWires(local_datei)
 github_wires = return_setOfWires(github_datei)
 
 
-print(github_wires)
-print(local_wires)
+vergleich = vergleiche_wire_mengen(local_wires, github_wires)
+print(vergleich)
 
-os.remove(github_datei)
+
