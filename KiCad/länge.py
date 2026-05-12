@@ -1,4 +1,4 @@
-#Programm um eine kicad_sch-Datei zu lesen und die Anzahl an Buchstaben zu zählen
+#Programm um eine kicad_sch-Datei zu lesen und die Anzahl an Zeichen zu zählen
 import sys
 from urllib.request import urlopen
 import os
