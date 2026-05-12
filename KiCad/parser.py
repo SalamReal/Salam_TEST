@@ -1,112 +1,139 @@
-
 import sys
+from pydoc import text
+from urllib.request import urlopen
 
+def return_setOfWires(datei):
+    
+    def tokenize(text):
+        tokens = []
+        i = 0
 
-def tokenize(text):
-    tokens = []
-    i = 0
+        while i < len(text):
+            c = text[i]
 
-    while i < len(text):
-        c = text[i]
-
-        if c.isspace():
-            i += 1
-
-        elif c in "()":
-            tokens.append(c)
-            i += 1
-
-        elif c == '"':
-            i += 1
-            start = i
-            while i < len(text) and text[i] != '"':
+            if c.isspace():
                 i += 1
-            tokens.append(text[start:i])
-            i += 1
 
-        else:
-            start = i
-            while i < len(text) and not text[i].isspace() and text[i] not in '()':
+            elif c in "()":
+                tokens.append(c)
                 i += 1
-            tokens.append(text[start:i])
 
-    return tokens
+            elif c == '"':
+                i += 1
+                start = i
+                while i < len(text) and text[i] != '"':
+                    i += 1
+                tokens.append(text[start:i])
+                i += 1
 
-def parse(tokens):
-    def parse_expr(index):
-        if index >= len(tokens):
-            raise ValueError("Unerwartetes Dateiende")
+            else:
+                start = i
+                while i < len(text) and not text[i].isspace() and text[i] not in '()':
+                    i += 1
+                tokens.append(text[start:i])
 
-        token = tokens[index]
+        return tokens
 
-        if token == "(":
-            result = []
-            index += 1
+    def parse(tokens):
+        def parse_expr(index):
+            if index >= len(tokens):
+                raise ValueError("Unerwartetes Dateiende")
 
-            while True:
-                if index >= len(tokens):
-                    raise ValueError("Fehlende schließende Klammer")
-                if tokens[index] == ")":
-                    return result, index + 1
+            token = tokens[index]
 
-                element, index = parse_expr(index)
-                result.append(element)
+            if token == "(":
+                result = []
+                index += 1
 
-        elif token == ")":
-            raise ValueError("Unerwartete schließende Klammer")
+                while True:
+                    if index >= len(tokens):
+                        raise ValueError("Fehlende schließende Klammer")
+                    if tokens[index] == ")":
+                        return result, index + 1
 
-        else:
-            return token, index + 1
+                    element, index = parse_expr(index)
+                    result.append(element)
 
-    tree, next_index = parse_expr(0)
+            elif token == ")":
+                raise ValueError("Unerwartete schließende Klammer")
 
-    if next_index != len(tokens):
-        raise ValueError("Zusätzliche Tokens nach dem Ende")
+            else:
+                return token, index + 1
 
-    return tree
+        tree, next_index = parse_expr(0)
 
-def finde_wires(node):
-    wires = []
+        if next_index != len(tokens):
+            raise ValueError("Zusätzliche Tokens nach dem Ende")
 
-    if isinstance(node, list) and len(node) > 0:
-        if node[0] == "wire":
-            wires.append(node)
+        return tree
 
-        for element in node:
-            wires.extend(finde_wires(element))
+    def finde_wires(node):
+        wires = []
 
-    return wires
+        if isinstance(node, list) and len(node) > 0:
+            if node[0] == "wire":
+                wires.append(node)
 
-def finde_wire_punkte(node):
-    wires = set()
-
-    if isinstance(node, list) and len(node) > 0:
-        if node[0] == "wire":
             for element in node:
-                if (
-                    isinstance(element, list)
-                    and len(element) == 3
-                    and element[0] == "pts"
-                    and isinstance(element[1], list)
-                    and isinstance(element[2], list)
-                    and element[1][0] == "xy"
-                    and element[2][0] == "xy"
-                ):
-                    start = (element[1][1], element[1][2])
-                    ende = (element[2][1], element[2][2])
-                    wires.add((start, ende))
+                wires.extend(finde_wires(element))
 
-        for element in node:
-            wires.update(finde_wire_punkte(element))
+        return wires
 
-    return wires
+    def finde_wire_punkte(node):
+        wires = set()
 
-text = sys.argv[1]
-with open(text, "r", encoding="utf-8") as datei:
-    inhalt = datei.read()
-tokens = tokenize(inhalt)
-tree = parse(tokens)
-wires = finde_wires(tree)
-wire_points = finde_wire_punkte(tree)
+        if isinstance(node, list) and len(node) > 0:
+            if node[0] == "wire":
+                for element in node:
+                    if (
+                        isinstance(element, list)
+                        and len(element) == 3
+                        and element[0] == "pts"
+                        and isinstance(element[1], list)
+                        and isinstance(element[2], list)
+                        and element[1][0] == "xy"
+                        and element[2][0] == "xy"
+                    ):
+                        start = (element[1][1], element[1][2])
+                        ende = (element[2][1], element[2][2])
+                        wires.add((start, ende))
 
-print(wire_points)
+            for element in node:
+                wires.update(finde_wire_punkte(element))
+
+        return wires
+
+    with open(datei, "r", encoding="utf-8") as datei:
+        inhalt = datei.read()
+    tokens = tokenize(inhalt)
+    tree = parse(tokens)
+    wires = finde_wires(tree)
+    wire_points = finde_wire_punkte(wires)
+
+    return wire_points
+
+def download_datei(url, dateiname):
+    original_datei = dateiname.replace(".kicad_sch", "_original.kicad_sch")
+    try:
+        with urlopen(url) as antwort:
+            inhalt = antwort.read().decode("utf-8")
+
+        with open(original_datei, "w", encoding="utf-8") as datei:
+            datei.write(inhalt)
+        
+        return original_datei
+    except Exception as e:
+        print(f"Fehler beim Herunterladen der Datei: {e}")
+
+if len(sys.argv) < 3:
+    print("Benutzung: python parser.py <datei> <github_repository_url>")
+    sys.exit(1)
+
+local_datei = sys.argv[1]
+github_url = sys.argv[2]
+github_datei = download_datei(github_url, local_datei)
+
+
+local_wires = return_setOfWires(local_datei)
+github_wires = return_setOfWires(github_datei)
+print(local_wires == github_wires)
