@@ -1,3 +1,4 @@
+import os
 import sys
 from pydoc import text
 from urllib.request import urlopen
@@ -67,18 +68,6 @@ def return_setOfWires(datei):
 
         return tree
 
-    def finde_wires(node):
-        wires = []
-
-        if isinstance(node, list) and len(node) > 0:
-            if node[0] == "wire":
-                wires.append(node)
-
-            for element in node:
-                wires.extend(finde_wires(element))
-
-        return wires
-
     def finde_wire_punkte(node):
         wires = set()
 
@@ -135,5 +124,9 @@ github_datei = download_datei(github_url, local_datei)
 
 local_wires = return_setOfWires(local_datei)
 github_wires = return_setOfWires(github_datei)
+
+
 print(github_wires)
 print(local_wires)
+
+os.remove(github_datei)
