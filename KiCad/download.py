@@ -1,33 +1,50 @@
-from urllib.request import urlopen
-import json
-
-def hole_branch_sha(owner, repo, branch="main"):
-    url = f"https://api.github.com/repos/{owner}/{repo}/branches/{branch}"
-    with urlopen(url) as antwort:
-        daten = json.load(antwort)
-    return daten["commit"]["sha"]
+import subprocess
 
 
-def lade_datei_aus_commit(owner, repo, commit_sha, dateipfad):
-    url = f"https://raw.githubusercontent.com/{owner}/{repo}/{commit_sha}/{dateipfad}"
-    with urlopen(url) as antwort:
-        return antwort.read().decode("utf-8")
+# Aktualisiert die Referenzen des angegebenen Remotes, damit origin/main den neuesten Stand kennt.
+def git_fetch(remote="origin"):
+    subprocess.run(["git", "fetch", remote], check=True)
 
 
-def lese_datei(dateiname):
+# Liest die Commit-SHA eines Remote-Refs wie origin/main aus.
+def hole_remote_sha(remote_ref="origin/main"):
+    result = subprocess.run(
+        ["git", "rev-parse", remote_ref],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True
+    )
+    return result.stdout.strip()
+
+
+# Liest den Inhalt einer Datei direkt aus einem Git-Ref wie origin/main, ohne sie lokal auszuschreiben.
+def lade_datei_aus_git(dateipfad_im_repo, remote_ref="origin/main"):
+    result = subprocess.run(
+        ["git", "show", f"{remote_ref}:{dateipfad_im_repo}"],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True
+    )
+    return result.stdout
+
+
+# Liest den Inhalt der lokalen Datei aus dem Arbeitsverzeichnis.
+def lese_lokale_datei(dateiname):
     with open(dateiname, "r", encoding="utf-8") as datei:
         return datei.read()
 
 
-owner = "SalamReal"
-repo = "Salam_TEST"
-branch = "main"
-dateipfad_im_repo = "KiCad/helloworld.py"
 lokale_datei = "helloworld.py"
+dateipfad_im_repo = "KiCad/helloworld.py"
+remote_ref = "origin/main"
 
-commit_sha = hole_branch_sha(owner, repo, branch)
-github_inhalt = lade_datei_aus_commit(owner, repo, commit_sha, dateipfad_im_repo)
-local_inhalt = lese_datei(lokale_datei)
+git_fetch()
+
+commit_sha = hole_remote_sha(remote_ref)
+github_inhalt = lade_datei_aus_git(dateipfad_im_repo, remote_ref)
+local_inhalt = lese_lokale_datei(lokale_datei)
 
 print(local_inhalt)
 print(github_inhalt)
