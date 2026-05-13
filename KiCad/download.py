@@ -7,9 +7,11 @@ def download_datei(url, dateiname):
     try:
         with urlopen(url) as antwort:
             inhalt = antwort.read().decode("utf-8")
+            
 
         with open(original_datei, "w", encoding="utf-8") as datei:
             datei.write(inhalt)
+            
         
         return original_datei
     except Exception as e:
