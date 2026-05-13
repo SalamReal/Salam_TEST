@@ -18,37 +18,27 @@
 
   (wire
     (pts
-      (xy 20 10) (xy 20 20)
+      (xy 60 11) (xy 20 10)
     )
     (stroke
       (width 0)
       (type default)
     )
-    (uuid "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+    (uuid "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
   )
 
   (wire
     (pts
-      (xy 69 172) (xy 1 30)
+      (xy 60 167) (xy 20 10)
     )
     (stroke
       (width 0)
       (type default)
     )
-    (uuid "cccccccc-cccc-cccc-cccc-cccccccccccc")
+    (uuid "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
   )
 
-  (wire
-    (pts
-      (xy 390 172) (xy 1 30)
-    )
-    (stroke
-      (width 0)
-      (type default)
-    )
-    (uuid "cccccccc-cccc-cccc-cccc-cccccccccccc")
-  )
-
+  
   (junction
     (at 20 10)
     (diameter 0)
