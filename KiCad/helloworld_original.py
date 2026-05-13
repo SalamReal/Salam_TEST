@@ -1,1 +1,1 @@
-print("hello world" + " from KiCad!")
+print("hello world ddainiaon")
