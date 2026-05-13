@@ -1,32 +1,35 @@
 from urllib.request import urlopen
-import os
+import json
 
-# Funktion zum Herunterladen einer KiCad-Schaltplan-Datei von einer URL
-def download_datei(url, dateiname):
-    original_datei = dateiname.replace(".py", "_original.py")
-    try:
-        with urlopen(url) as antwort:
-            inhalt = antwort.read().decode("utf-8")
-            
+def hole_branch_sha(owner, repo, branch="main"):
+    url = f"https://api.github.com/repos/{owner}/{repo}/branches/{branch}"
+    with urlopen(url) as antwort:
+        daten = json.load(antwort)
+    return daten["commit"]["sha"]
 
-        with open(original_datei, "w", encoding="utf-8") as datei:
-            datei.write(inhalt)
-            
-        
-        return original_datei
-    except Exception as e:
-        print(f"Fehler beim Herunterladen der Datei: {e}")
 
-local_datei = "helloworld.py"
-github_url = "https://raw.githubusercontent.com/SalamReal/Salam_TEST/main/KiCad/helloworld.py"
-github_datei =download_datei(github_url, local_datei)
+def lade_datei_aus_commit(owner, repo, commit_sha, dateipfad):
+    url = f"https://raw.githubusercontent.com/{owner}/{repo}/{commit_sha}/{dateipfad}"
+    with urlopen(url) as antwort:
+        return antwort.read().decode("utf-8")
 
-with open(local_datei, "r", encoding="utf-8") as datei:
-    local_inhalt = datei.read()
-with open(github_datei, "r", encoding="utf-8") as datei:
-    github_inhalt = datei.read()
+
+def lese_datei(dateiname):
+    with open(dateiname, "r", encoding="utf-8") as datei:
+        return datei.read()
+
+
+owner = "SalamReal"
+repo = "Salam_TEST"
+branch = "main"
+dateipfad_im_repo = "KiCad/helloworld.py"
+lokale_datei = "helloworld.py"
+
+commit_sha = hole_branch_sha(owner, repo, branch)
+github_inhalt = lade_datei_aus_commit(owner, repo, commit_sha, dateipfad_im_repo)
+local_inhalt = lese_datei(lokale_datei)
 
 print(local_inhalt)
 print(github_inhalt)
-
-os.remove(github_datei)
+print(local_inhalt == github_inhalt)
+print(f"Verglichen mit Commit: {commit_sha}")
