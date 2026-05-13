@@ -1,4 +1,5 @@
 from urllib.request import urlopen
+import os
 
 # Funktion zum Herunterladen einer KiCad-Schaltplan-Datei von einer URL
 def download_datei(url, dateiname):
@@ -25,3 +26,5 @@ with open(github_datei, "r", encoding="utf-8") as datei:
 
 print(local_inhalt)
 print(github_inhalt)
+
+os.remove(github_datei)
