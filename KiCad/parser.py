@@ -136,6 +136,6 @@ def return_comparison(local_dateiname, dateipfad_im_repo, remote="origin", branc
 
     vergleich = vergleiche_wire_mengen(github_wires, local_wires)
 
-    return(vergleich)
-
+    output = (f"Deleted wires: {vergleich[0]}, Added wires: {vergleich[1]}")
+    return(output)
 

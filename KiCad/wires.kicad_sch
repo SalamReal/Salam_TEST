@@ -27,17 +27,6 @@
     (uuid "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
   )
 
-  (wire
-    (pts
-      (xy 60 167) (xy 20 10)
-    )
-    (stroke
-      (width 0)
-      (type default)
-    )
-    (uuid "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
-  )
-
   
   (junction
     (at 20 10)
